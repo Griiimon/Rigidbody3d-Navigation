@@ -1,0 +1,87 @@
+[gd_scene load_steps=11 format=3 uid="uid://big4te607vgrc"]
+
+[ext_resource type="Script" uid="uid://dcvi5gta251u5" path="res://main.gd" id="1_0xm2m"]
+[ext_resource type="Script" uid="uid://m708t6m850j" path="res://enemy.gd" id="1_ig7tw"]
+[ext_resource type="Script" uid="uid://cc1omjspsnf4s" path="res://navigation_target.gd" id="3_h2yge"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_h2yge"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_h2yge"]
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_ig7tw"]
+vertices = PackedVector3Array(-9.5, 0.45, -9.5, -9.5, 0.45, 9.5, 9.5, 0.45, 9.5, 9.5, 0.45, -9.5)
+polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
+geometry_parsed_geometry_type = 1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0xm2m"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_h2yge"]
+transparency = 1
+albedo_color = Color(0.654902, 0.192157, 0.121569, 0.541176)
+
+[sub_resource type="SphereMesh" id="SphereMesh_1bvp3"]
+material = SubResource("StandardMaterial3D_h2yge")
+
+[sub_resource type="LabelSettings" id="LabelSettings_h2yge"]
+font_size = 40
+font_color = Color(0.847059, 0.0862745, 0.0392157, 1)
+outline_size = 3
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_0xm2m")
+
+[node name="Enemy" type="RigidBody3D" parent="." node_paths=PackedStringArray("target_node")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.4243, 0)
+collision_layer = 2
+lock_rotation = true
+script = ExtResource("1_ig7tw")
+target_node = NodePath("../Target")
+speed = 3.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Enemy"]
+shape = SubResource("CapsuleShape3D_h2yge")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="Enemy"]
+debug_enabled = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Enemy"]
+mesh = SubResource("CapsuleMesh_h2yge")
+
+[node name="Ground Check RayCast3D" type="RayCast3D" parent="Enemy"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.949596, 0)
+target_position = Vector3(0, -0.2, 0)
+hit_back_faces = false
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("NavigationMesh_ig7tw")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="NavigationRegion3D"]
+cast_shadow = 0
+use_collision = true
+size = Vector3(20, 0.1, 20)
+material = SubResource("StandardMaterial3D_0xm2m")
+
+[node name="Target" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.95477, 2.00278, 7.62612)
+mesh = SubResource("SphereMesh_1bvp3")
+script = ExtResource("3_h2yge")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.918522, -0.395369, 0, 0.0616721, 0.143277, 0.987759, -0.39053, -0.907279, 0.155986, 0, 7.84914, 0)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.992476, 0.122441, 0, -0.122441, 0.992476, 0, 3.71939, 12.1673)
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Label" type="Label" parent="UI"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -343.0
+offset_right = 343.0
+offset_bottom = 55.0
+grow_horizontal = 2
+text = "Click to change the Targets position"
+label_settings = SubResource("LabelSettings_h2yge")
+horizontal_alignment = 1
